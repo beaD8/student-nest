@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student Nest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f13;
+  --surface:#18181f;
+  --surface2:#22222c;
+  --surface3:#2c2c38;
+  --border:#2e2e3a;
+  --text:#f0eff6;
+  --text2:#9896aa;
+  --text3:#5a5870;
+  --accent:#7c6af7;
+  --accent2:#f06292;
+  --accent-glow:rgba(124,106,247,0.18);
+  --green:#4cceac;
+  --yellow:#ffd166;
+  --red:#ff6b6b;
+  --blue:#4ea8de;
+  --orange:#ff9a3c;
+  --pink:#f06292;
+  --radius:14px;
+  --radius-sm:8px;
+  --radius-lg:20px;
+  --nav-h:68px;
+  --side-nav-w:72px;
+  --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --trans:.2s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"]{
+  --bg:#f4f3fa;
+  --surface:#ffffff;
+  --surface2:#eeedf7;
+  --surface3:#e4e3f0;
+  --border:#d8d6ec;
+  --text:#1a1828;
+  --text2:#5a5878;
+  --text3:#9896b0;
+}
+[data-theme="forest"]{
+  --bg:#0d1412;
+  --surface:#141f1c;
+  --surface2:#1c2b27;
+  --surface3:#243530;
+  --border:#2a3d38;
+  --text:#e8f5f0;
+  --text2:#7aaa97;
+  --text3:#3d6b5c;
+  --accent:#4cceac;
+  --accent2:#f06292;
+}
+[data-theme="rose"]{
+  --bg:#160d12;
+  --surface:#1f1218;
+  --surface2:#2a1820;
+  --surface3:#351e28;
+  --border:#3d2030;
+  --text:#fdeef5;
+  --text2:#c47998;
+  --text3:#7a3d55;
+  --accent:#f06292;
+  --accent2:#7c6af7;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-body)}
+body{display:flex;flex-direction:row;}
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+/* ===== APP SHELL ===== */
+#app{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;padding-bottom:24px;display:none;animation:fadeUp .3s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* ===== BOTTOM NAV ===== */
+#bottom-nav{
+  width:var(--side-nav-w);
+  height:100%;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:16px 0;
+  position:relative;
+  z-index:100;
+  flex-shrink:0;
+  gap:4px;
+  order:-1;
+}
+.nav-item{
+  width:52px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  cursor:pointer;border-radius:12px;
+  transition:var(--trans);color:var(--text3);flex-shrink:0;
+}
+.nav-item:hover{color:var(--text2);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.nav-item svg{width:20px;height:20px;transition:var(--trans)}
+.nav-item.active svg{transform:scale(1.1)}
+.nav-item span{font-size:9px;font-weight:600;letter-spacing:.3px}
+/* ===== HEADINGS ===== */
+.page-header{padding:24px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.page-title{font-family:var(--font-head);font-size:26px;font-weight:800;letter-spacing:-.5px}
+.page-subtitle{color:var(--text2);font-size:13px;margin-top:2px}
+/* ===== CARD ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:var(--trans)}
+/* ===== BTN ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:var(--trans)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.15)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+/* ===== INPUT ===== */
+.input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:var(--trans)}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.input::placeholder{color:var(--text3)}
+select.input{appearance:none;cursor:pointer}
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;top:0;right:0;bottom:0;left:var(--side-nav-w);background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:999;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+.modal-overlay.center{align-items:center}
+.modal{background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:24px 20px 32px;animation:slideUp .3s ease}
+.modal-overlay.center .modal{border-radius:var(--radius-lg);max-height:85vh}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px}
+.modal-title{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500;letter-spacing:.3px;text-transform:uppercase}
+/* ===== TAG / BADGE ===== */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.3px}
+/* ===== CHIP FILTER ===== */
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding:4px 0;scrollbar-width:none}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--text2);background:transparent;transition:var(--trans);white-space:nowrap}
+.chip.active,.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+/* ===== DIVIDER ===== */
+.divider{height:1px;background:var(--border);margin:12px 0}
+/* ===== AVATAR ===== */
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;font-family:var(--font-head);font-weight:800;color:var(--accent);flex-shrink:0;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+/* ==============================
+   HOME PAGE
+============================== */
+#home{padding:0}
+.home-hero{
+  padding:28px 20px 20px;
+  background:linear-gradient(160deg,var(--surface) 0%,var(--bg) 100%);
+  position:relative;overflow:hidden;
+}
+.home-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:180px;height:180px;
+  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+.greeting-date{font-size:12px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.greeting-text{font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:16px;line-height:1.2}
+.greeting-text span{color:var(--accent)}
+/* STUDENT ID */
+.student-id-card{
+  background:linear-gradient(135deg,var(--surface2) 0%,var(--surface3) 100%);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;display:flex;gap:14px;align-items:center;
+  position:relative;overflow:hidden;
+}
+.student-id-card::after{
+  content:'STUDENT ID';position:absolute;right:-12px;top:50%;transform:translateY(-50%) rotate(90deg);
+  font-size:9px;font-weight:800;letter-spacing:2px;color:var(--text3);font-family:var(--font-head);
+}
+.id-info{flex:1;min-width:0}
+.id-name{font-family:var(--font-head);font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.id-school{font-size:11px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.id-meta{display:flex;gap:12px;margin-top:8px}
+.id-meta-item{font-size:10px;color:var(--text3)}
+.id-meta-item span{color:var(--text2);font-weight:500;display:block;font-size:11px}
+.id-badge{
+  display:inline-block;padding:2px 8px;border-radius:99px;font-size:9px;
+  font-weight:700;letter-spacing:.5px;background:var(--accent);color:#fff;margin-top:6px;
+}
+/* TODO */
+.section-header{padding:20px 20px 10px;display:flex;align-items:center;justify-content:space-between}
+.section-title{font-family:var(--font-head);font-size:15px;font-weight:700}
+.todo-filters{padding:0 20px;margin-bottom:12px}
+.todo-list{padding:0 20px;display:flex;flex-direction:column;gap:8px}
+.todo-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;display:flex;align-items:flex-start;gap:12px;
+  animation:fadeUp .25s ease;cursor:pointer;
+}
+.todo-item:hover{border-color:var(--accent)}
+.todo-check{
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--border);
+  flex-shrink:0;margin-top:1px;cursor:pointer;transition:var(--trans);
+  display:flex;align-items:center;justify-content:center;
+}
+.todo-item[data-status="completed"] .todo-check{background:var(--green);border-color:var(--green)}
+.todo-item[data-status="missed"] .todo-check{background:var(--red);border-color:var(--red)}
+.todo-body{flex:1;min-width:0}
+.todo-title{font-size:14px;font-weight:500;line-height:1.3}
+.todo-item[data-status="completed"] .todo-title{text-decoration:line-through;color:var(--text2)}
+.todo-meta{font-size:11px;color:var(--text3);margin-top:3px}
+.todo-course-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;margin-top:5px;display:inline-block}
+.todo-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.icon-btn{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:var(--radius-sm);transition:var(--trans);display:flex;align-items:center}
+.icon-btn:hover{color:var(--text);background:var(--surface2)}
+.empty-state{text-align:center;padding:32px 20px;color:var(--text3);font-size:13px}
+.empty-state .empty-icon{font-size:32px;margin-bottom:8px}
+
+/* ==============================
+   COURSES PAGE
+============================== */
+#courses{}
+.search-wrap{padding:16px 20px}
+.search-wrap .input{padding-left:40px}
+.search-box{position:relative}
+.search-box .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.courses-grid{padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.course-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;cursor:pointer;transition:var(--trans);position:relative;overflow:hidden;
+}
+.course-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--course-color,var(--accent))}
+.course-card:hover{transform:translateY(-2px);border-color:var(--course-color,var(--accent));box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.course-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px;background:color-mix(in srgb,var(--course-color,var(--accent)) 15%,transparent)}
+.course-name{font-family:var(--font-head);font-size:14px;font-weight:700;line-height:1.3;margin-bottom:4px}
+.course-code{font-size:11px;color:var(--text3)}
+.course-teacher{font-size:11px;color:var(--text2);margin-top:6px}
+.add-course-card{
+  border:1.5px dashed var(--border);border-radius:var(--radius);
+  padding:16px;cursor:pointer;transition:var(--trans);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;color:var(--text3);font-size:13px;min-height:120px;
+}
+.add-course-card:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+/* ===== COURSE DETAIL (sub-window) ===== */
+.course-window{
+  position:fixed;top:0;right:0;bottom:0;left:var(--side-nav-w);z-index:200;background:var(--bg);
+  animation:slideInRight .3s ease;display:flex;flex-direction:column;
+}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.course-window-header{
+  padding:16px 20px;display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;
+}
+.cw-title{font-family:var(--font-head);font-size:18px;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cw-color-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.course-window-tabs{
+  display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);
+  padding:0 16px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.cw-tab{
+  padding:12px 16px;font-size:13px;font-weight:600;color:var(--text3);
+  cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:var(--trans);
+}
+.cw-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.course-window-body{flex:1;overflow-y:auto;padding:16px 20px 80px}
+.cw-tab-content{display:none}
+.cw-tab-content.active{display:block;animation:fadeUp .2s ease}
+/* Files */
+.file-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;transition:var(--trans)}
+.file-item:hover{border-color:var(--accent)}
+.file-icon{font-size:20px;flex-shrink:0}
+.file-name{font-size:14px;font-weight:500;flex:1}
+.file-meta{font-size:11px;color:var(--text3)}
+
+/* Links */
+.link-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;transition:var(--trans)}
+.link-item:hover{border-color:var(--accent)}
+.link-icon{width:32px;height:32px;border-radius:8px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.link-title{font-size:14px;font-weight:500}
+.link-url{font-size:11px;color:var(--text3)}
+
+/* ==============================
+   CALENDAR PAGE
+============================== */
+.cal-header{padding:20px 20px 12px;display:flex;align-items:center;gap:12px}
+.cal-month-nav{display:flex;align-items:center;gap:8px}
+.cal-month-title{font-family:var(--font-head);font-size:20px;font-weight:800;flex:1}
+.cal-nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--trans)}
+.cal-nav-btn:hover{background:var(--surface3);color:var(--text)}
+.cal-grid-wrap{padding:0 16px}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-dow-cell{text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:4px 0;letter-spacing:.5px;text-transform:uppercase}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-cell{
+  min-height:52px;padding:4px;border-radius:8px;cursor:pointer;
+  transition:var(--trans);position:relative;background:var(--surface);border:1px solid transparent;
+}
+.cal-cell:hover{border-color:var(--accent)}
+.cal-cell.today{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border-color:var(--accent)}
+.cal-cell.other-month .cal-day-num{color:var(--text3)}
+.cal-cell.selected{border-color:var(--accent)}
+.cal-day-num{font-size:11px;font-weight:700;color:var(--text2)}
+.cal-cell.today .cal-day-num{color:var(--accent);font-weight:800}
+.cal-dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px}
+.cal-dot{width:5px;height:5px;border-radius:50%}
+.cal-events-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.cal-event-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;display:flex;align-items:flex-start;gap:10px;
+}
+.cal-event-color{width:4px;border-radius:4px;align-self:stretch;flex-shrink:0;min-height:32px}
+.cal-event-info .title{font-size:14px;font-weight:600}
+.cal-event-info .meta{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ==============================
+   SCHEDULE PAGE
+============================== */
+.sched-header{padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between}
+.sched-week-nav{display:flex;align-items:center;gap:8px}
+.sched-week-title{font-size:13px;color:var(--text2);font-weight:500}
+.schedule-wrap{overflow-x:auto;padding:0 16px 16px}
+.schedule-table{min-width:520px;border-collapse:collapse;width:100%}
+.sch-th{font-size:11px;font-weight:700;color:var(--text3);padding:6px 4px;text-align:center;letter-spacing:.3px;white-space:nowrap}
+.sch-time{font-size:10px;color:var(--text3);padding:4px 6px 4px 0;text-align:right;white-space:nowrap;vertical-align:top;padding-top:6px}
+.sch-cell{border-left:1px solid var(--border);padding:2px;vertical-align:top;min-width:64px}
+.sch-block{
+  border-radius:6px;padding:5px 7px;font-size:10px;font-weight:600;
+  line-height:1.3;cursor:pointer;transition:var(--trans);margin-bottom:1px;
+  background:color-mix(in srgb,var(--block-color,var(--accent)) 20%,transparent);
+  border-left:3px solid var(--block-color,var(--accent));
+  color:var(--text);
+}
+.sch-block:hover{filter:brightness(1.2)}
+.sch-add{
+  width:100%;min-height:20px;border:none;background:transparent;cursor:pointer;
+  border-radius:4px;transition:var(--trans);
+}
+.sch-add:hover{background:var(--surface2)}
+
+/* ==============================
+   SETTINGS PAGE
+============================== */
+.settings-section{padding:20px 20px 0}
+.settings-section-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.settings-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.settings-item{
+  padding:14px 16px;display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:var(--trans);
+}
+.settings-item:last-child{border-bottom:none}
+.settings-item:hover{background:var(--surface2)}
+.settings-icon{width:36px;height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)}
+.settings-text{flex:1}
+.settings-label{font-size:14px;font-weight:500}
+.settings-desc{font-size:11px;color:var(--text3);margin-top:1px}
+.settings-arrow{color:var(--text3)}
+/* toggle */
+.toggle{width:42px;height:24px;background:var(--border);border-radius:99px;cursor:pointer;position:relative;transition:var(--trans);flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:var(--trans)}
+.toggle.on::after{left:21px}
+/* theme swatches */
+.theme-swatches{display:flex;gap:10px;flex-wrap:wrap;padding:16px 20px 0}
+.swatch{width:52px;height:52px;border-radius:12px;cursor:pointer;border:3px solid transparent;transition:var(--trans);position:relative}
+.swatch.active{border-color:var(--accent)}
+.swatch::after{content:attr(data-name);position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--text3);white-space:nowrap}
+.profile-display{padding:20px;display:flex;align-items:center;gap:16px}
+.profile-avatar-lg{width:72px;height:72px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:28px;font-family:var(--font-head);font-weight:800;color:var(--accent);cursor:pointer;border:3px solid var(--accent);overflow:hidden;flex-shrink:0}
+.profile-avatar-lg img{width:100%;height:100%;object-fit:cover}
+/* ==============================
+   MISC
+============================== */
+.fab{
+  position:fixed;bottom:24px;right:20px;
+  width:52px;height:52px;border-radius:50%;background:var(--accent);
+  color:#fff;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(124,106,247,.4);
+  transition:var(--trans);z-index:50;
+}
+.fab:hover{transform:scale(1.08);filter:brightness(1.1)}
+.fab.hidden{display:none}
+/* tag colors */
+.tag-accent{background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent)}
+.tag-green{background:color-mix(in srgb,var(--green) 15%,transparent);color:var(--green)}
+.tag-red{background:color-mix(in srgb,var(--red) 15%,transparent);color:var(--red)}
+.tag-yellow{background:color-mix(in srgb,var(--yellow) 15%,transparent);color:var(--yellow)}
+/* color picker row */
+.color-opts{display:flex;gap:8px;flex-wrap:wrap}
+.color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:var(--trans)}
+.color-opt.selected{border-color:var(--text);transform:scale(1.15)}
+/* course day chips */
+.course-day-chip{cursor:pointer}
+.course-day-chip span{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border);color:var(--text2);background:transparent;transition:var(--trans)}
+.course-day-chip input:checked+span{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+</style>
+</head>
+<body>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- ===== HOME PAGE ===== -->
+  <div id="home" class="page active">
+    <div class="home-hero">
+      <div class="greeting-date" id="greeting-date"></div>
+      <div class="greeting-text" id="greeting-text">Good morning, <span id="greet-name">Student</span> 👋</div>
+      <!-- Student ID -->
+      <div class="student-id-card" id="student-id-card" style="cursor:pointer" onclick="openStudentIdEdit()">
+        <div class="avatar" id="home-avatar">
+          <span id="home-avatar-initials">S</span>
+          <img id="home-avatar-img" style="display:none" src="" alt="">
+        </div>
+        <div class="id-info">
+          <div class="id-name" id="id-name-display">Student Name</div>
+          <div class="id-school" id="id-school-display">School Name</div>
+          <div class="id-meta">
+            <div class="id-meta-item"><span id="id-year-display">—</span>Year Level</div>
+            <div class="id-meta-item"><span id="id-num-display">—</span>ID Number</div>
+          </div>
+          <div class="id-badge">ACTIVE</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">To-Do List</div>
+      <button class="btn btn-primary btn-sm" onclick="openAddTodo()">+ Add Task</button>
+    </div>
+    <div class="todo-filters">
+      <div class="chip-row" id="todo-filter-row">
+        <div class="chip" data-filter="all" onclick="setTodoFilter(this,'all')">All</div>
+        <div class="chip active" data-filter="ongoing" onclick="setTodoFilter(this,'ongoing')">Ongoing</div>
+        <div class="chip" data-filter="missed" onclick="setTodoFilter(this,'missed')">Missed</div>
+        <div class="chip" data-filter="completed" onclick="setTodoFilter(this,'completed')">Completed</div>
+      </div>
+    </div>
+    <div class="todo-list" id="todo-list"></div>
+    <div style="height:12px"></div>
+  </div>
+
+  <!-- ===== COURSES PAGE ===== -->
+  <div id="courses-page" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Courses</div>
+        <div class="page-subtitle">Your enrolled subjects</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="input" id="course-search" placeholder="Search courses…" oninput="renderCourses()"/>
+      </div>
+    </div>
+    <div class="courses-grid" id="courses-grid"></div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- ===== CALENDAR PAGE ===== -->
+  <div id="calendar-page" class="page">
+    <div class="cal-header">
+      <div class="cal-month-title" id="cal-title"></div>
+      <div class="cal-month-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Event</button>
+    </div>
+    <div class="cal-grid-wrap">
+      <div class="cal-dow" id="cal-dow"></div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div style="padding:12px 16px 4px">
+      <div class="section-title" id="cal-selected-label">Events</div>
+    </div>
+    <div class="cal-events-list" id="cal-events-list"></div>
+    <div style="height:12px"></div>
+  </div>
+
+  <!-- ===== SCHEDULE PAGE ===== -->
+  <div id="schedule-page" class="page">
+    <div class="sched-header">
+      <div>
+        <div class="page-title">Schedule</div>
+        <div class="page-subtitle" id="sched-week-range"></div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openAddBlock()">+ Block</button>
+    </div>
+    <div class="sched-week-nav" style="padding:0 20px 12px;display:flex;gap:8px">
+      <button class="cal-nav-btn" onclick="changeWeek(-1)">‹</button>
+      <button class="cal-nav-btn" onclick="changeWeek(1)">›</button>
+    </div>
+    <div class="schedule-wrap">
+      <table class="schedule-table" id="schedule-table"></table>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS PAGE ===== -->
+  <div id="settings-page" class="page">
+    <div class="page-header"><div><div class="page-title">Settings</div></div></div>
+    <!-- Profile display -->
+    <div class="profile-display">
+      <div class="profile-avatar-lg" onclick="openSettingsProfile()" id="settings-avatar">
+        <span id="settings-avatar-initials">S</span>
+        <img id="settings-avatar-img" style="display:none" src="" alt="">
+      </div>
+      <div>
+        <div style="font-family:var(--font-head);font-size:17px;font-weight:800" id="settings-name-display">Student Name</div>
+        <div style="font-size:12px;color:var(--text3)" id="settings-school-display">School Name</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="openSettingsProfile()">Edit Profile</button>
+      </div>
+    </div>
+    <!-- Theme -->
+    <div class="settings-section">
+      <div class="settings-section-title">Appearance</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Theme</div>
+        <div class="theme-swatches">
+          <div class="swatch active" data-theme="dark" data-name="Dark" style="background:linear-gradient(135deg,#0f0f13,#22222c)" onclick="setTheme('dark',this)"></div>
+          <div class="swatch" data-theme="light" data-name="Light" style="background:linear-gradient(135deg,#f4f3fa,#eeedf7)" onclick="setTheme('light',this)"></div>
+          <div class="swatch" data-theme="forest" data-name="Forest" style="background:linear-gradient(135deg,#0d1412,#1c2b27)" onclick="setTheme('forest',this)"></div>
+          <div class="swatch" data-theme="rose" data-name="Rose" style="background:linear-gradient(135deg,#160d12,#2a1820)" onclick="setTheme('rose',this)"></div>
+        </div>
+        <div style="height:28px"></div>
+      </div>
+    </div>
+    <!-- Notifications -->
+    <div class="settings-section" style="margin-top:20px">
+      <div class="settings-section-title">Notifications</div>
+      <div class="settings-list">
+        <div class="settings-item">
+          <div class="settings-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="settings-text"><div class="settings-label">Task Reminders</div><div class="settings-desc">Get notified before due dates</div></div>
+          <div class="toggle on" id="toggle-tasks" onclick="handleNotifToggle(this,'tasks')"></div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="settings-text"><div class="settings-label">Event Alerts</div><div class="settings-desc">Calendar event reminders</div></div>
+          <div class="toggle on" id="toggle-events" onclick="handleNotifToggle(this,'events')"></div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div class="settings-text"><div class="settings-label">Course Updates</div><div class="settings-desc">Notifications from your courses</div></div>
+          <div class="toggle" id="toggle-courses" onclick="handleNotifToggle(this,'courses')"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Account -->
+    <div class="settings-section" style="margin-top:20px">
+      <div class="settings-section-title">Account</div>
+      <div class="settings-list">
+        <div class="settings-item" onclick="openSettingsProfile()">
+          <div class="settings-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="settings-text"><div class="settings-label">Edit Profile</div><div class="settings-desc">Name, school, photo, ID</div></div>
+          <svg class="settings-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-item" onclick="clearAllData()">
+          <div class="settings-icon" style="color:var(--red)"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></div>
+          <div class="settings-text"><div class="settings-label" style="color:var(--red)">Clear All Data</div><div class="settings-desc">Reset app to default</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <!-- Logo -->
+  <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c6af7 0%,#f06292 100%);display:flex;align-items:center;justify-content:center;margin-bottom:16px;flex-shrink:0;box-shadow:0 4px 14px rgba(124,106,247,0.45);position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.15) 0%,transparent 60%);border-radius:12px;"></div>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Open book pages -->
+      <path d="M12 6 C10 4.5 7 4 4 4.5 L4 18.5 C7 18 10 18.5 12 20 C14 18.5 17 18 20 18.5 L20 4.5 C17 4 14 4.5 12 6Z" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.9)" stroke-width="1.2" stroke-linejoin="round"/>
+      <line x1="12" y1="6" x2="12" y2="20" stroke="rgba(255,255,255,0.7)" stroke-width="1.1"/>
+      <!-- Sparkle star top-right -->
+      <path d="M18.5 2 L19.1 3.6 L20.8 3.6 L19.4 4.6 L19.9 6.2 L18.5 5.2 L17.1 6.2 L17.6 4.6 L16.2 3.6 L17.9 3.6 Z" fill="white" opacity="0.95"/>
+      <!-- Small dot sparkle -->
+      <circle cx="5.5" cy="7" r="0.8" fill="white" opacity="0.7"/>
+    </svg>
+  </div>
+  <div class="nav-item active" data-page="home" onclick="switchPage('home',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" data-page="courses-page" onclick="switchPage('courses-page',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    <span>Courses</span>
+  </div>
+  <div class="nav-item" data-page="calendar-page" onclick="switchPage('calendar-page',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Cal</span>
+  </div>
+  <div class="nav-item" data-page="schedule-page" onclick="switchPage('schedule-page',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Sched</span>
+  </div>
+  <div class="nav-item" data-page="settings-page" onclick="switchPage('settings-page',this)" style="margin-top:auto">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Settings</span>
+  </div>
+</nav>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Add/Edit Todo Modal -->
+<div id="todo-modal" style="display:none">
+  <div class="modal-overlay" onclick="if(event.target===this)closeTodoModal()">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="todo-modal-title">Add Task</div>
+      <div class="form-group">
+        <label class="form-label">Task Title</label>
+        <input class="input" id="todo-input-title" placeholder="e.g. Finish assignment…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Due Date & Time</label>
+        <input class="input" id="todo-input-due" type="datetime-local"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Course (optional)</label>
+        <select class="input" id="todo-input-course">
+          <option value="">— No course —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="input" id="todo-input-priority">
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeTodoModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveTodo()">Save Task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Course Modal -->
+<div id="course-modal" style="display:none">
+  <div class="modal-overlay" onclick="if(event.target===this)closeCourseModal()">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="course-modal-title">Add Course</div>
+      <div class="form-group">
+        <label class="form-label">Course Name</label>
+        <input class="input" id="course-input-name" placeholder="e.g. Mathematics…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Course Code</label>
+        <input class="input" id="course-input-code" placeholder="e.g. MATH 101"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Teacher / Professor</label>
+        <input class="input" id="course-input-teacher" placeholder="e.g. Mr. Santos"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emoji Icon</label>
+        <input class="input" id="course-input-icon" placeholder="e.g. 📐" maxlength="4"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-opts" id="course-color-opts"></div>
+      </div>
+      <div class="divider" style="margin:16px 0 12px"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Schedule (optional)</div>
+      <div class="form-group">
+        <label class="form-label">Days</label>
+        <div id="course-day-checkboxes" style="display:flex;flex-wrap:wrap;gap:6px">
+          <label class="course-day-chip"><input type="checkbox" value="0" style="display:none"/><span>Mon</span></label>
+          <label class="course-day-chip"><input type="checkbox" value="1" style="display:none"/><span>Tue</span></label>
+          <label class="course-day-chip"><input type="checkbox" value="2" style="display:none"/><span>Wed</span></label>
+          <label class="course-day-chip"><input type="checkbox" value="3" style="display:none"/><span>Thu</span></label>
+          <label class="course-day-chip"><input type="checkbox" value="4" style="display:none"/><span>Fri</span></label>
+          <label class="course-day-chip"><input type="checkbox" value="5" style="display:none"/><span>Sat</span></label>
+          <label class="course-day-chip"><input type="checkbox" value="6" style="display:none"/><span>Sun</span></label>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Start Time</label>
+          <input class="input" id="course-input-start" type="time" value="08:00"/>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">End Time</label>
+          <input class="input" id="course-input-end" type="time" value="09:00"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Room (optional)</label>
+        <input class="input" id="course-input-room" placeholder="e.g. Room 201"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-danger" id="course-delete-btn" style="flex:1;display:none" onclick="deleteCourse()">Delete</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="closeCourseModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveCourse()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Event Modal -->
+<div id="event-modal" style="display:none">
+  <div class="modal-overlay" onclick="if(event.target===this)closeEventModal()">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="event-modal-title">Add Event</div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="input" id="event-input-title" placeholder="Event title…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select class="input" id="event-input-type">
+          <option value="general">General</option>
+          <option value="course">Course Event</option>
+          <option value="allday">All Day</option>
+          <option value="multiday">Multiple Days</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Start Date & Time</label>
+        <input class="input" id="event-input-start" type="datetime-local"/>
+      </div>
+      <div class="form-group" id="event-end-group">
+        <label class="form-label">End Date (for multi-day)</label>
+        <input class="input" id="event-input-end" type="date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-opts" id="event-color-opts"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeEventModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveEvent()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Schedule Block Modal -->
+<div id="block-modal" style="display:none">
+  <div class="modal-overlay" onclick="if(event.target===this)closeBlockModal()">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="block-modal-title">Add Schedule Block</div>
+      <div class="form-group">
+        <label class="form-label">Subject / Label</label>
+        <input class="input" id="block-input-label" placeholder="e.g. Mathematics"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Day</label>
+        <select class="input" id="block-input-day">
+          <option value="0">Monday</option>
+          <option value="1">Tuesday</option>
+          <option value="2">Wednesday</option>
+          <option value="3">Thursday</option>
+          <option value="4">Friday</option>
+          <option value="5">Saturday</option>
+          <option value="6">Sunday</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Start Time</label>
+          <input class="input" id="block-input-start" type="time" value="08:00"/>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">End Time</label>
+          <input class="input" id="block-input-end" type="time" value="09:00"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Room (optional)</label>
+        <input class="input" id="block-input-room" placeholder="e.g. Room 201"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Course (Link to Course)</label>
+        <select class="input" id="block-input-course">
+          <option value="">No course</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-opts" id="block-color-opts"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeBlockModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveBlock()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile/Settings Modal -->
+<div id="profile-modal" style="display:none">
+  <div class="modal-overlay center" onclick="if(event.target===this)closeProfileModal()">
+    <div class="modal">
+      <div class="modal-title">Edit Profile</div>
+      <div style="display:flex;justify-content:center;margin-bottom:16px">
+        <div class="profile-avatar-lg" onclick="document.getElementById('avatar-file').click()" id="profile-modal-avatar">
+          <span id="profile-modal-initials">S</span>
+          <img id="profile-modal-img" style="display:none" src="" alt="">
+        </div>
+        <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="input" id="profile-input-name" placeholder="Your full name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">School / University</label>
+        <input class="input" id="profile-input-school" placeholder="School name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Year Level</label>
+        <input class="input" id="profile-input-year" placeholder="e.g. 2nd Year"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Student ID Number</label>
+        <input class="input" id="profile-input-id" placeholder="e.g. 2024-00123"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeProfileModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveProfile()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Course Window (full-screen) -->
+<div id="course-window" style="display:none" class="course-window">
+  <div class="course-window-header">
+    <button class="icon-btn btn-ghost" onclick="closeCourseWindow()" style="flex-shrink:0;border-radius:50%;border:1px solid var(--border)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cw-color-dot" id="cw-color-dot"></div>
+    <div class="cw-title" id="cw-course-title">Course</div>
+    <button class="btn btn-ghost btn-sm" onclick="openEditCourse()">Edit</button>
+  </div>
+  <div class="course-window-tabs" id="cw-tabs">
+    <div class="cw-tab active" onclick="switchCWTab('todos',this)">To-Do</div>
+    <div class="cw-tab" onclick="switchCWTab('schedule',this)">Schedule</div>
+    <div class="cw-tab" onclick="switchCWTab('files',this)">Files</div>
+    <div class="cw-tab" onclick="switchCWTab('links',this)">Links</div>
+  </div>
+  <div class="course-window-body">
+    <!-- Todos tab -->
+    <div class="cw-tab-content active" id="cw-todos">
+      <button class="btn btn-primary btn-sm" onclick="openAddTodoForCourse()" style="margin-bottom:14px">+ Add Task</button>
+      <div id="cw-todo-list"></div>
+    </div>
+    <!-- Schedule tab -->
+    <div class="cw-tab-content" id="cw-schedule">
+      <button class="btn btn-primary btn-sm" onclick="openAddBlockForCourse()" style="margin-bottom:14px">+ Add Schedule</button>
+      <div id="cw-schedule-list"></div>
+    </div>
+    <!-- Files tab -->
+    <div class="cw-tab-content" id="cw-files">
+      <button class="btn btn-primary btn-sm" onclick="openAddFile()" style="margin-bottom:14px">+ Add File</button>
+      <div id="cw-file-list"></div>
+    </div>
+    <!-- Links tab -->
+    <div class="cw-tab-content" id="cw-links">
+      <button class="btn btn-primary btn-sm" onclick="openAddLink()" style="margin-bottom:14px">+ Add Link</button>
+      <div id="cw-links-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Generic small modals for course sub-items -->
+<div id="sub-modal" style="display:none">
+  <div class="modal-overlay" onclick="if(event.target===this)closeSubModal()">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="sub-modal-title">Add Item</div>
+      <div id="sub-modal-body"></div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeSubModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" id="sub-modal-save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA & STATE
+// ============================================================
+const COLORS=['#7c6af7','#4cceac','#ff6b6b','#ffd166','#4ea8de','#ff9a3c','#f06292','#00bcd4','#8bc34a','#e91e63'];
+
+let profile = JSON.parse(localStorage.getItem('sn_profile')||'{}');
+let todos = JSON.parse(localStorage.getItem('sn_todos')||'[]');
+let courses = JSON.parse(localStorage.getItem('sn_courses')||'[]');
+let events = JSON.parse(localStorage.getItem('sn_events')||'[]');
+let scheduleBlocks = JSON.parse(localStorage.getItem('sn_blocks')||'[]');
+
+let currentTodoFilter='ongoing';
+let editingTodoId=null;
+let editingCourseId=null;
+let activeCourseId=null;
+let currentCalYear, currentCalMonth;
+let selectedCalDate=null;
+let editingEventId=null;
+let currentWeekStart=null;
+let editingBlockId=null;
+
+// ============================================================
+// SAVE HELPERS
+// ============================================================
+const save=()=>{
+  localStorage.setItem('sn_profile',JSON.stringify(profile));
+  localStorage.setItem('sn_todos',JSON.stringify(todos));
+  localStorage.setItem('sn_courses',JSON.stringify(courses));
+  localStorage.setItem('sn_events',JSON.stringify(events));
+  localStorage.setItem('sn_blocks',JSON.stringify(scheduleBlocks));
+};
+const uid=()=>Math.random().toString(36).slice(2);
+
+// ============================================================
+// PAGE SWITCHING
+// ============================================================
+function switchPage(pageId,el){
+  // Close course window if open
+  const cw=document.getElementById('course-window');
+  if(cw&&cw.style.display!=='none'){
+    cw.style.display='none';
+    activeCourseId=null;
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  if(pageId==='courses-page') renderCourses();
+  if(pageId==='calendar-page') renderCalendar();
+  if(pageId==='schedule-page') renderSchedule();
+}
+
+// ============================================================
+// GREETING & DATE
+// ============================================================
+function updateGreeting(){
+  const now=new Date();
+  const h=now.getHours();
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('greeting-date').textContent=`${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  document.getElementById('greeting-text').innerHTML=`${greet}, <span id="greet-name">${profile.name||'Student'}</span> 👋`;
+  updateProfileUI();
+}
+function updateProfileUI(){
+  const name=profile.name||'Student';
+  const initials=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'S';
+  // home
+  document.getElementById('id-name-display').textContent=name;
+  document.getElementById('id-school-display').textContent=profile.school||'School Name';
+  document.getElementById('id-year-display').textContent=profile.year||'—';
+  document.getElementById('id-num-display').textContent=profile.idnum||'—';
+  document.getElementById('home-avatar-initials').textContent=initials;
+  if(profile.avatar){document.getElementById('home-avatar-img').src=profile.avatar;document.getElementById('home-avatar-img').style.display='';document.getElementById('home-avatar-initials').style.display='none';}
+  else{document.getElementById('home-avatar-img').style.display='none';document.getElementById('home-avatar-initials').style.display='';}
+  // settings
+  document.getElementById('settings-name-display').textContent=name;
+  document.getElementById('settings-school-display').textContent=profile.school||'School Name';
+  document.getElementById('settings-avatar-initials').textContent=initials;
+  if(profile.avatar){document.getElementById('settings-avatar-img').src=profile.avatar;document.getElementById('settings-avatar-img').style.display='';document.getElementById('settings-avatar-initials').style.display='none';}
+  else{document.getElementById('settings-avatar-img').style.display='none';document.getElementById('settings-avatar-initials').style.display='';}
+  document.getElementById('greet-name')?document.getElementById('greet-name').textContent=profile.name||'Student':null;
+}
+
+// ============================================================
+// PROFILE MODAL
+// ============================================================
+function openSettingsProfile(){
+  document.getElementById('profile-input-name').value=profile.name||'';
+  document.getElementById('profile-input-school').value=profile.school||'';
+  document.getElementById('profile-input-year').value=profile.year||'';
+  document.getElementById('profile-input-id').value=profile.idnum||'';
+  const initials=(profile.name||'S').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('profile-modal-initials').textContent=initials;
+  if(profile.avatar){document.getElementById('profile-modal-img').src=profile.avatar;document.getElementById('profile-modal-img').style.display='';document.getElementById('profile-modal-initials').style.display='none';}
+  else{document.getElementById('profile-modal-img').style.display='none';document.getElementById('profile-modal-initials').style.display='';}
+  document.getElementById('profile-modal').style.display='';
+}
+function openStudentIdEdit(){openSettingsProfile();}
+function closeProfileModal(){document.getElementById('profile-modal').style.display='none';}
+function saveProfile(){
+  profile.name=document.getElementById('profile-input-name').value.trim()||'Student';
+  profile.school=document.getElementById('profile-input-school').value.trim();
+  profile.year=document.getElementById('profile-input-year').value.trim();
+  profile.idnum=document.getElementById('profile-input-id').value.trim();
+  save();updateGreeting();closeProfileModal();
+}
+function handleAvatarUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    profile.avatar=ev.target.result;
+    document.getElementById('profile-modal-img').src=ev.target.result;
+    document.getElementById('profile-modal-img').style.display='';
+    document.getElementById('profile-modal-initials').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================================
+// TODO
+// ============================================================
+function setTodoFilter(el,f){
+  currentTodoFilter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderTodos();
+}
+function renderTodos(){
+  // Update missed status
+  const now=new Date();
+  todos.forEach(t=>{if(t.status==='ongoing'&&t.due&&new Date(t.due)<now)t.status='missed';});
+  save();
+  const list=document.getElementById('todo-list');
+  let filtered=currentTodoFilter==='all'?todos:todos.filter(t=>t.status===currentTodoFilter);
+  if(!filtered.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon">${currentTodoFilter==='completed'?'✅':currentTodoFilter==='missed'?'⚠️':'📝'}</div>No tasks here.</div>`;return;}
+  list.innerHTML=filtered.map(t=>{
+    const course=t.courseId?courses.find(c=>c.id===t.courseId):null;
+    const due=t.due?new Date(t.due).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    return `<div class="todo-item" data-status="${t.status}" data-id="${t.id}">
+      <div class="todo-check" onclick="toggleTodo('${t.id}')">
+        ${t.status==='completed'?'<svg width="11" height="11" fill="none" stroke="#fff" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}
+        ${t.status==='missed'?'<svg width="11" height="11" fill="none" stroke="#fff" stroke-width="3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>':''}
+      </div>
+      <div class="todo-body">
+        <div class="todo-title">${t.title}</div>
+        ${due?`<div class="todo-meta">📅 ${due}</div>`:''}
+        ${course?`<span class="todo-course-tag" style="background:color-mix(in srgb,${course.color} 18%,transparent);color:${course.color}">${course.name}</span>`:''}
+      </div>
+      <div class="todo-actions">
+        <button class="icon-btn" data-action="edit" data-id="${t.id}"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="icon-btn" data-action="delete" data-id="${t.id}"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleTodo(id){
+  const t=todos.find(x=>x.id===id);if(!t)return;
+  t.status=t.status==='completed'?'ongoing':'completed';
+  save();renderTodos();
+}
+function deleteTodo(id){
+  todos=todos.filter(x=>x.id!==id);
+  // Also delete linked calendar event
+  events=events.filter(e=>e.linkedTodoId!==id);
+  save();renderTodos();renderCalendar();
+  if(activeCourseId)renderCWTodos();
+}
+function openAddTodo(){
+  editingTodoId=null;
+  document.getElementById('todo-modal-title').textContent='Add Task';
+  document.getElementById('todo-input-title').value='';
+  document.getElementById('todo-input-due').value='';
+  document.getElementById('todo-input-priority').value='normal';
+  populateTodoCourseSelect();
+  document.getElementById('todo-modal').style.display='';
+}
+function openEditTodo(id){
+  const t=todos.find(x=>x.id===id);if(!t)return;
+  editingTodoId=id;
+  document.getElementById('todo-modal-title').textContent='Edit Task';
+  document.getElementById('todo-input-title').value=t.title;
+  document.getElementById('todo-input-due').value=t.due||'';
+  document.getElementById('todo-input-priority').value=t.priority||'normal';
+  populateTodoCourseSelect(t.courseId);
+  document.getElementById('todo-modal').style.display='';
+}
+function populateTodoCourseSelect(selected=''){
+  const sel=document.getElementById('todo-input-course');
+  sel.innerHTML='<option value="">— No course —</option>'+courses.map(c=>`<option value="${c.id}" ${c.id===selected?'selected':''}>${c.name}</option>`).join('');
+}
+function populateBlockCourseSelect(selected=''){
+  const sel=document.getElementById('block-input-course');
+  sel.innerHTML='<option value="">No course</option>'+courses.map(c=>`<option value="${c.id}" ${c.id===selected?'selected':''}>${c.code} - ${c.name}</option>`).join('');
+}
+function closeTodoModal(){document.getElementById('todo-modal').style.display='none';}
+function saveTodo(){
+  const title=document.getElementById('todo-input-title').value.trim();
+  if(!title)return alert('Please enter a task title.');
+  const due=document.getElementById('todo-input-due').value;
+  if(editingTodoId){
+    const t=todos.find(x=>x.id===editingTodoId);
+    t.title=title;t.due=due;
+    t.courseId=document.getElementById('todo-input-course').value;
+    t.priority=document.getElementById('todo-input-priority').value;
+    // Update linked calendar event if exists
+    const linkedEvent=events.find(e=>e.linkedTodoId===editingTodoId);
+    if(linkedEvent){
+      linkedEvent.title='📝 '+title;
+      linkedEvent.start=due;
+      linkedEvent.end=due;
+    }
+  }else{
+    const todoId=uid();
+    todos.unshift({id:todoId,title,due:due,
+      courseId:document.getElementById('todo-input-course').value,
+      priority:document.getElementById('todo-input-priority').value,status:'ongoing',created:Date.now()});
+    // Auto-create calendar event for this todo
+    if(due){
+      events.push({
+        id:uid(),
+        title:'📝 '+title,
+        type:'deadline',
+        start:due,
+        end:due,
+        color:'#ff6b6b',
+        linkedTodoId:todoId
+      });
+    }
+  }
+  save();closeTodoModal();renderTodos();renderCalendar();
+  if(activeCourseId)renderCWTodos();
+}
+
+// ============================================================
+// COURSES
+// ============================================================
+function renderCourses(){
+  const q=(document.getElementById('course-search')?.value||'').toLowerCase();
+  const grid=document.getElementById('courses-grid');
+  const filtered=courses.filter(c=>!q||c.name.toLowerCase().includes(q)||c.code.toLowerCase().includes(q));
+  grid.innerHTML=filtered.map(c=>`
+    <div class="course-card" style="--course-color:${c.color}" onclick="openCourseWindow('${c.id}')">
+      <div class="course-icon">${c.icon||'📚'}</div>
+      <div class="course-name">${c.name}</div>
+      <div class="course-code">${c.code||''}</div>
+      <div class="course-teacher">${c.teacher?'👤 '+c.teacher:''}</div>
+    </div>
+  `).join('')+`<div class="add-course-card" onclick="openAddCourse()">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>New Course</span>
+  </div>`;
+}
+
+function buildColorOpts(containerId, selectedColor){
+  const el=document.getElementById(containerId);
+  el.innerHTML=COLORS.map(c=>`<div class="color-opt${c===selectedColor?' selected':''}" style="background:${c}" data-color="${c}" onclick="selectColor('${containerId}','${c}')"></div>`).join('');
+}
+function selectColor(containerId, color){
+  document.querySelectorAll('#'+containerId+' .color-opt').forEach(d=>d.classList.toggle('selected',d.dataset.color===color));
+}
+function getSelectedColor(containerId){
+  return document.querySelector('#'+containerId+' .color-opt.selected')?.dataset.color||COLORS[0];
+}
+
+function openAddCourse(){
+  editingCourseId=null;
+  document.getElementById('course-modal-title').textContent='Add Course';
+  document.getElementById('course-input-name').value='';
+  document.getElementById('course-input-code').value='';
+  document.getElementById('course-input-teacher').value='';
+  document.getElementById('course-input-icon').value='📚';
+  buildColorOpts('course-color-opts',COLORS[0]);
+  document.getElementById('course-delete-btn').style.display='none';
+  // reset schedule fields
+  document.querySelectorAll('#course-day-checkboxes input[type=checkbox]').forEach(cb=>cb.checked=false);
+  document.getElementById('course-input-start').value='08:00';
+  document.getElementById('course-input-end').value='09:00';
+  document.getElementById('course-input-room').value='';
+  document.getElementById('course-modal').style.display='';
+}
+function openEditCourse(){
+  const c=courses.find(x=>x.id===activeCourseId);if(!c)return;
+  editingCourseId=activeCourseId;
+  document.getElementById('course-modal-title').textContent='Edit Course';
+  document.getElementById('course-input-name').value=c.name;
+  document.getElementById('course-input-code').value=c.code||'';
+  document.getElementById('course-input-teacher').value=c.teacher||'';
+  document.getElementById('course-input-icon').value=c.icon||'📚';
+  buildColorOpts('course-color-opts',c.color);
+  document.getElementById('course-delete-btn').style.display='';
+  // populate schedule from existing blocks for this course
+  const existing=scheduleBlocks.filter(b=>b.courseId===activeCourseId);
+  document.querySelectorAll('#course-day-checkboxes input[type=checkbox]').forEach(cb=>{
+    cb.checked=existing.some(b=>parseInt(b.day)===parseInt(cb.value));
+  });
+  if(existing.length){
+    document.getElementById('course-input-start').value=String(existing[0].startH).padStart(2,'0')+':00';
+    document.getElementById('course-input-end').value=String(existing[0].endH).padStart(2,'0')+':00';
+    document.getElementById('course-input-room').value=existing[0].room||'';
+  }else{
+    document.getElementById('course-input-start').value='08:00';
+    document.getElementById('course-input-end').value='09:00';
+    document.getElementById('course-input-room').value='';
+  }
+  document.getElementById('course-modal').style.display='';
+}
+function closeCourseModal(){document.getElementById('course-modal').style.display='none';}
+function saveCourse(){
+  const name=document.getElementById('course-input-name').value.trim();
+  if(!name)return alert('Course name required.');
+  const color=getSelectedColor('course-color-opts');
+  const data={name,code:document.getElementById('course-input-code').value.trim(),
+    teacher:document.getElementById('course-input-teacher').value.trim(),
+    icon:document.getElementById('course-input-icon').value.trim()||'📚',
+    color};
+  let courseId;
+  if(editingCourseId){
+    Object.assign(courses.find(x=>x.id===editingCourseId),data);
+    courseId=editingCourseId;
+  }else{
+    courseId=uid();
+    courses.push({id:courseId,...data});
+  }
+  // Handle schedule blocks from modal
+  const checkedDays=[...document.querySelectorAll('#course-day-checkboxes input[type=checkbox]:checked')].map(cb=>parseInt(cb.value));
+  const startH=parseInt(document.getElementById('course-input-start').value);
+  const endH=parseInt(document.getElementById('course-input-end').value);
+  const room=document.getElementById('course-input-room').value.trim();
+  // Remove old blocks for this course that were created via the course modal
+  scheduleBlocks=scheduleBlocks.filter(b=>b.courseId!==courseId);
+  // Add new blocks for each checked day
+  if(checkedDays.length&&endH>startH){
+    checkedDays.forEach(day=>{
+      scheduleBlocks.push({id:uid(),label:name,day,startH,endH,room,color,courseId});
+    });
+  }
+  save();closeCourseModal();renderCourses();renderSchedule();
+  if(activeCourseId===editingCourseId){updateCourseWindowHeader();renderCWSchedule();}
+}
+
+function deleteCourse(){
+  if(!confirm('Delete this course? This will also remove all associated tasks, events, and schedules.'))return;
+  const courseId=editingCourseId;
+  // Remove the course
+  courses=courses.filter(c=>c.id!==courseId);
+  // Remove all todos associated with this course
+  todos=todos.filter(t=>t.courseId!==courseId);
+  // Remove all events associated with todos of this course
+  events=events.filter(e=>!todos.find(t=>t.courseId===courseId&&e.linkedTodoId===t.id));
+  // Remove all schedule blocks associated with this course
+  scheduleBlocks=scheduleBlocks.filter(b=>b.courseId!==courseId);
+  save();
+  closeCourseModal();
+  if(activeCourseId===courseId){
+    closeCourseWindow();
+  }
+  renderCourses();
+  renderTodos();
+  renderCalendar();
+  renderSchedule();
+}
+
+// ============================================================
+// COURSE WINDOW
+// ============================================================
+function openCourseWindow(id){
+  activeCourseId=id;
+  updateCourseWindowHeader();
+  switchCWTab('todos',document.querySelector('#cw-tabs .cw-tab'));
+  renderCWTodos();
+  document.getElementById('course-window').style.display='flex';
+}
+function updateCourseWindowHeader(){
+  const c=courses.find(x=>x.id===activeCourseId);if(!c)return;
+  document.getElementById('cw-course-title').textContent=c.name+(c.code?' – '+c.code:'');
+  document.getElementById('cw-color-dot').style.background=c.color;
+}
+function closeCourseWindow(){
+  document.getElementById('course-window').style.display='none';
+  activeCourseId=null;
+}
+function switchCWTab(tab, el){
+  document.querySelectorAll('.cw-tab-content').forEach(x=>x.classList.remove('active'));
+  document.getElementById('cw-'+tab).classList.add('active');
+  document.querySelectorAll('.cw-tab').forEach(x=>x.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(tab==='todos')renderCWTodos();
+  if(tab==='schedule')renderCWSchedule();
+  if(tab==='files')renderCWFiles();
+
+  if(tab==='links')renderCWLinks();
+}
+// CW Todos
+function renderCWTodos(){
+  const list=todos.filter(t=>t.courseId===activeCourseId);
+  const el=document.getElementById('cw-todo-list');
+  if(!list.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📝</div>No tasks for this course.</div>';return;}
+  el.innerHTML=list.map(t=>{
+    return `<div class="todo-item" data-status="${t.status}">
+      <div class="todo-check" onclick="toggleTodo('${t.id}');renderCWTodos()">${t.status==='completed'?'<svg width="11" height="11" fill="none" stroke="#fff" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+      <div class="todo-body"><div class="todo-title">${t.title}</div>${t.due?`<div class="todo-meta">📅 ${new Date(t.due).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div>`:''}</div>
+      <div class="todo-actions">
+        <button class="icon-btn" onclick="openEditTodo('${t.id}')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="icon-btn" onclick="deleteTodo('${t.id}')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openAddTodoForCourse(){
+  editingTodoId=null;
+  document.getElementById('todo-modal-title').textContent='Add Task';
+  document.getElementById('todo-input-title').value='';
+  document.getElementById('todo-input-due').value='';
+  document.getElementById('todo-input-priority').value='normal';
+  populateTodoCourseSelect(activeCourseId);
+  document.getElementById('todo-modal').style.display='';
+}
+// CW Schedule
+const DAYS_FULL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function renderCWSchedule(){
+  const blocks=scheduleBlocks.filter(b=>b.courseId===activeCourseId);
+  const el=document.getElementById('cw-schedule-list');
+  if(!blocks.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🗓️</div>No schedule blocks yet.</div>';return;}
+  // sort by day then startH
+  const sorted=[...blocks].sort((a,b)=>a.day-b.day||a.startH-b.startH);
+  el.innerHTML=sorted.map(b=>{
+    const startLabel=(b.startH>12?b.startH-12:b.startH)+(b.startH>=12?'pm':'am');
+    const endLabel=(b.endH>12?b.endH-12:b.endH)+(b.endH>=12?'pm':'am');
+    return `<div class="file-item" style="border-left:3px solid ${b.color||'var(--accent)'}">
+      <div style="width:36px;height:36px;border-radius:10px;background:color-mix(in srgb,${b.color||'var(--accent)'} 18%,transparent);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🕐</div>
+      <div style="flex:1;min-width:0">
+        <div class="file-name">${b.label}${b.room?' · '+b.room:''}</div>
+        <div class="file-meta">${DAYS_FULL[b.day]} · ${startLabel} – ${endLabel}</div>
+      </div>
+      <button class="icon-btn" onclick="editCWBlock('${b.id}')" title="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="icon-btn" onclick="deleteCWBlock('${b.id}')" title="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div>`;
+  }).join('');
+}
+function openAddBlockForCourse(){
+  const c=courses.find(x=>x.id===activeCourseId);
+  editingBlockId=null;
+  document.getElementById('block-modal-title').textContent='Add Schedule Block';
+  document.getElementById('block-input-label').value=c?c.name:'';
+  document.getElementById('block-input-day').value='0';
+  document.getElementById('block-input-start').value='08:00';
+  document.getElementById('block-input-end').value='09:00';
+  document.getElementById('block-input-room').value='';
+  populateBlockCourseSelect(activeCourseId);
+  buildColorOpts('block-color-opts',c?c.color:COLORS[0]);
+  // store that we came from course window so we can return
+  document.getElementById('block-modal').dataset.fromCourse='1';
+  document.getElementById('block-modal').style.display='';
+}
+function editCWBlock(id){
+  const b=scheduleBlocks.find(x=>x.id===id);if(!b)return;
+  editBlock(id);
+  document.getElementById('block-modal').dataset.fromCourse='1';
+}
+function deleteCWBlock(id){
+  if(!confirm('Delete this schedule block?'))return;
+  scheduleBlocks=scheduleBlocks.filter(x=>x.id!==id);
+  save();renderCWSchedule();renderSchedule();
+}
+// CW Files
+let courseFiles=JSON.parse(localStorage.getItem('sn_files')||'{}');
+function renderCWFiles(){
+  const files=(courseFiles[activeCourseId]||[]);
+  const el=document.getElementById('cw-file-list');
+  if(!files.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📁</div>No files added yet.</div>';return;}
+  el.innerHTML=files.map((f,i)=>{
+    const icon=f.type==='pdf'?'📄':f.type==='link'?'🔗':f.type==='img'?'🖼️':'📎';
+    const meta=f.type==='link'?f.url:f.date+(f.size?' • '+formatFileSize(f.size):'');
+    const downloadBtn=f.data?`<button class="icon-btn" onclick="downloadFile('${activeCourseId}',${i})" title="Download"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>`:'';
+    return `<div class="file-item">
+      <div class="file-icon" onclick="openFile('${activeCourseId}',${i})" style="cursor:pointer">${icon}</div>
+      <div style="flex:1;cursor:pointer;min-width:0" onclick="openFile('${activeCourseId}',${i})">
+        <div class="file-name">${f.name}</div>
+        <div class="file-meta" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${meta}</div>
+      </div>
+      ${downloadBtn}
+      <button class="icon-btn" onclick="deleteFile('${activeCourseId}',${i})" title="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div>`;
+  }).join('');
+}
+function formatFileSize(bytes){
+  if(bytes===0)return '0 B';
+  const k=1024;
+  const sizes=['B','KB','MB'];
+  const i=Math.floor(Math.log(bytes)/Math.log(k));
+  return Math.round(bytes/Math.pow(k,i)*100)/100+' '+sizes[i];
+}
+function openFile(courseId,i){
+  const file=courseFiles[courseId][i];
+  if(!file)return;
+  
+  if(file.type==='link'){
+    window.open(file.url,'_blank');
+    return;
+  }
+  
+  if(!file.data){
+    alert('No file content to view.');
+    return;
+  }
+  
+  if(file.type==='img'){
+    openImagePreview(file.name,file.data,courseId,i);
+  }else if(file.type==='pdf'||file.type==='doc'){
+    openDocumentPreview(file.name,file.data,courseId,i);
+  }else{
+    try{
+      window.open(file.data,'_blank');
+    }catch(e){
+      alert('Unable to open this file type.');
+    }
+  }
+}
+function openDocumentPreview(filename,dataUrl,courseId,idx){
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
+  modal.onclick=(e)=>{if(e.target===modal)modal.remove();};
+  
+  const container=document.createElement('div');
+  container.style.cssText='width:100%;height:100%;display:flex;flex-direction:column;background:var(--surface);border-radius:var(--radius);overflow:hidden';
+  
+  const header=document.createElement('div');
+  header.style.cssText='padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px';
+  header.innerHTML=`
+    <div style="font-weight:600;color:var(--text);word-break:break-word;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${filename}</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+      <button onclick="downloadFile('${courseId}',${idx})" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </button>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:22px;line-height:1;padding:2px 4px">×</button>
+    </div>`;
+  
+  const iframeContainer=document.createElement('div');
+  iframeContainer.style.cssText='flex:1;overflow:auto';
+  
+  const iframe=document.createElement('iframe');
+  iframe.style.cssText='width:100%;height:100%;border:none';
+  iframe.src=dataUrl;
+  
+  iframeContainer.appendChild(iframe);
+  container.appendChild(header);
+  container.appendChild(iframeContainer);
+  modal.appendChild(container);
+  document.body.appendChild(modal);
+}
+function openImagePreview(filename,dataUrl,courseId,idx){
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;flex-direction:column';
+  modal.onclick=(e)=>{if(e.target===modal)modal.remove();};
+  
+  const container=document.createElement('div');
+  container.style.cssText='max-width:90vw;max-height:90vh;display:flex;flex-direction:column;background:var(--surface);border-radius:var(--radius);overflow:hidden;cursor:default';
+  container.onclick=(e)=>e.stopPropagation();
+  
+  const header=document.createElement('div');
+  header.style.cssText='padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px';
+  header.innerHTML=`
+    <div style="font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${filename}</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+      ${courseId!==undefined&&idx!==undefined?`<button onclick="downloadFile('${courseId}',${idx})" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </button>`:''}
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:22px;line-height:1;padding:2px 4px">×</button>
+    </div>`;
+  
+  const img=document.createElement('img');
+  img.src=dataUrl;
+  img.style.cssText='max-width:100%;max-height:calc(90vh - 56px);object-fit:contain;display:block';
+  
+  container.appendChild(header);
+  container.appendChild(img);
+  modal.appendChild(container);
+  document.body.appendChild(modal);
+}
+function deleteFile(courseId,i){
+  if(!courseFiles[courseId])return;
+  courseFiles[courseId].splice(i,1);
+  localStorage.setItem('sn_files',JSON.stringify(courseFiles));renderCWFiles();
+}
+function downloadFile(courseId,i){
+  const file=courseFiles[courseId][i];
+  if(!file||!file.data)return alert('File data not available.');
+  const link=document.createElement('a');
+  link.href=file.data;
+  link.download=file.name;
+  link.click();
+}
+function openAddFile(){
+  openSubModal('Add File',`
+    <div class="form-group"><label class="form-label">Type</label><select class="input" id="sm-file-type" onchange="toggleFileFields()"><option value="doc">Document</option><option value="pdf">PDF</option><option value="img">Image</option><option value="link">Link</option></select></div>
+    <div id="sm-name-group" class="form-group"><label class="form-label">File Name</label><input class="input" id="sm-file-name" placeholder="e.g. Chapter 1 Notes"/></div>
+    <div id="sm-upload-group" class="form-group"><label class="form-label">Upload File</label><input type="file" class="input" id="sm-file-upload" style="padding:8px" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"/></div>
+    <div id="sm-link-group" class="form-group" style="display:none"><label class="form-label">Title</label><input class="input" id="sm-link-label" placeholder="e.g. Course Portal"/><label class="form-label" style="margin-top:10px">URL</label><input class="input" id="sm-link-url" type="url" placeholder="https://…" style="margin-top:6px"/></div>
+    <div id="sm-file-note" style="font-size:12px;color:var(--text3);margin-top:8px">Note: Files are stored locally in your browser. Keep file sizes under 5MB.</div>
+  `,()=>{
+    const type=document.getElementById('sm-file-type').value;
+    if(type==='link'){
+      const title=document.getElementById('sm-link-label').value.trim();
+      const url=document.getElementById('sm-link-url').value.trim();
+      if(!title)return alert('Title required.');
+      if(!url)return alert('URL required.');
+      if(!courseFiles[activeCourseId])courseFiles[activeCourseId]=[];
+      courseFiles[activeCourseId].push({name:title,type:'link',url,date:new Date().toLocaleDateString()});
+      localStorage.setItem('sn_files',JSON.stringify(courseFiles));
+      closeSubModal();renderCWFiles();
+      return;
+    }
+    const name=document.getElementById('sm-file-name').value.trim();if(!name)return alert('File name required.');
+    const fileInput=document.getElementById('sm-file-upload');
+    const file=fileInput.files[0];
+    if(!file)return alert('Please upload a file.');
+    if(file.size>5*1024*1024){return alert('File size must be under 5MB.');}
+    const reader=new FileReader();
+    reader.onerror=()=>{alert('Error reading file. Please try again.');};
+    reader.onload=(e)=>{
+      try{
+        const fileData=e.target.result;
+        if(!courseFiles[activeCourseId])courseFiles[activeCourseId]=[];
+        courseFiles[activeCourseId].push({
+          name:name,
+          type:type,
+          date:new Date().toLocaleDateString(),
+          data:fileData,
+          size:file.size
+        });
+        localStorage.setItem('sn_files',JSON.stringify(courseFiles));
+        closeSubModal();
+        renderCWFiles();
+      }catch(err){
+        alert('Error saving file: '+err.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  // trigger initial state
+  setTimeout(()=>toggleFileFields(),0);
+}
+function toggleFileFields(){
+  const type=document.getElementById('sm-file-type')?.value;
+  if(!type)return;
+  const isLink=type==='link';
+  document.getElementById('sm-name-group').style.display=isLink?'none':'';
+  document.getElementById('sm-upload-group').style.display=isLink?'none':'';
+  document.getElementById('sm-link-group').style.display=isLink?'':'none';
+  document.getElementById('sm-file-note').style.display=isLink?'none':'';
+  // update accept for image type
+  const uploadEl=document.getElementById('sm-file-upload');
+  if(uploadEl){
+    if(type==='img') uploadEl.accept='.jpg,.jpeg,.png,.gif,.webp';
+    else if(type==='pdf') uploadEl.accept='.pdf';
+    else uploadEl.accept='.pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx';
+  }
+}
+// CW Links
+let courseLinks=JSON.parse(localStorage.getItem('sn_links')||'{}');
+function renderCWLinks(){
+  const links=(courseLinks[activeCourseId]||[]);
+  const el=document.getElementById('cw-links-list');
+  if(!links.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🔗</div>No links added yet.</div>';return;}
+  el.innerHTML=links.map((l,i)=>`<div class="link-item">
+    <div class="link-icon">🔗</div>
+    <div style="flex:1;min-width:0">
+      <div class="link-title">${l.title}</div>
+      <div class="link-url">${l.url}</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="icon-btn" onclick="window.open('${l.url}','_blank')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+      <button class="icon-btn" onclick="deleteLink(${i})"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div>
+  </div>`).join('');
+}
+function deleteLink(i){courseLinks[activeCourseId].splice(i,1);localStorage.setItem('sn_links',JSON.stringify(courseLinks));renderCWLinks();}
+function openAddLink(){
+  openSubModal('Add Link',`
+    <div class="form-group"><label class="form-label">Title</label><input class="input" id="sm-link-title" placeholder="e.g. Course Portal"/></div>
+    <div class="form-group"><label class="form-label">URL</label><input class="input" id="sm-link-url" type="url" placeholder="https://…"/></div>
+  `,()=>{
+    const title=document.getElementById('sm-link-title').value.trim();
+    const url=document.getElementById('sm-link-url').value.trim();
+    if(!title||!url)return;
+    if(!courseLinks[activeCourseId])courseLinks[activeCourseId]=[];
+    courseLinks[activeCourseId].push({title,url});
+    localStorage.setItem('sn_links',JSON.stringify(courseLinks));closeSubModal();renderCWLinks();
+  });
+}
+// Sub modal
+let subModalSaveFn=null;
+function openSubModal(title,body,saveFn){
+  document.getElementById('sub-modal-title').textContent=title;
+  document.getElementById('sub-modal-body').innerHTML=body;
+  subModalSaveFn=saveFn;
+  document.getElementById('sub-modal-save-btn').onclick=saveFn;
+  document.getElementById('sub-modal').style.display='';
+}
+function closeSubModal(){document.getElementById('sub-modal').style.display='none';}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function initCalendar(){
+  const now=new Date();
+  currentCalYear=now.getFullYear();currentCalMonth=now.getMonth();
+  selectedCalDate=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+function changeMonth(dir){
+  currentCalMonth+=dir;
+  if(currentCalMonth>11){currentCalMonth=0;currentCalYear++;}
+  if(currentCalMonth<0){currentCalMonth=11;currentCalYear--;}
+  renderCalendar();
+}
+function renderCalendar(){
+  document.getElementById('cal-title').textContent=MONTHS[currentCalMonth]+' '+currentCalYear;
+  const dow=document.getElementById('cal-dow');
+  dow.innerHTML=DOW.map(d=>`<div class="cal-dow-cell">${d}</div>`).join('');
+  const first=new Date(currentCalYear,currentCalMonth,1).getDay();
+  const days=new Date(currentCalYear,currentCalMonth+1,0).getDate();
+  const today=new Date();
+  const grid=document.getElementById('cal-grid');
+  let html='';
+  // prev month fill
+  const prevDays=new Date(currentCalYear,currentCalMonth,0).getDate();
+  for(let i=first-1;i>=0;i--){
+    const d=prevDays-i;
+    html+=`<div class="cal-cell other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+  for(let d=1;d<=days;d++){
+    const dateStr=`${currentCalYear}-${String(currentCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=today.getFullYear()===currentCalYear&&today.getMonth()===currentCalMonth&&today.getDate()===d;
+    const isSel=dateStr===selectedCalDate;
+    const evts=events.filter(e=>e.start&&e.start.startsWith(dateStr));
+    const dots=evts.map(e=>`<div class="cal-dot" style="background:${e.color||'var(--accent)'}"></div>`).join('');
+    html+=`<div class="cal-cell${isToday?' today':''}${isSel?' selected':''}" onclick="selectCalDate('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+  // next fill
+  const total=first+days;const remaining=(7-total%7)%7;
+  for(let d=1;d<=remaining;d++)html+=`<div class="cal-cell other-month"><div class="cal-day-num">${d}</div></div>`;
+  grid.innerHTML=html;
+  renderCalEvents();
+}
+function selectCalDate(d){
+  selectedCalDate=d;renderCalendar();
+}
+function renderCalEvents(){
+  const list=document.getElementById('cal-events-list');
+  const label=document.getElementById('cal-selected-label');
+  const day=selectedCalDate;
+  const evts=day?events.filter(e=>e.start&&e.start.startsWith(day)):events;
+  label.textContent=day?`Events on ${new Date(day+'T00:00').toLocaleDateString('en',{month:'long',day:'numeric'})}:`:'All Events';
+  if(!evts.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📅</div>No events on this day.</div>';return;}
+  list.innerHTML=evts.map(e=>`<div class="cal-event-item">
+    <div class="cal-event-color" style="background:${e.color||'var(--accent)'}"></div>
+    <div class="cal-event-info" style="flex:1">
+      <div class="title">${e.title}</div>
+      <div class="meta">${e.start?new Date(e.start).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):''}${e.type==='allday'?' · All Day':''}${e.type==='multiday'&&e.end?' → '+e.end:''}</div>
+    </div>
+    <button class="icon-btn" onclick="deleteEvent('${e.id}')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+  </div>`).join('');
+}
+function openAddEvent(){
+  editingEventId=null;
+  document.getElementById('event-modal-title').textContent='Add Event';
+  document.getElementById('event-input-title').value='';
+  document.getElementById('event-input-type').value='general';
+  const now=new Date();
+  document.getElementById('event-input-start').value=selectedCalDate?selectedCalDate+'T08:00':'';
+  document.getElementById('event-input-end').value='';
+  buildColorOpts('event-color-opts',COLORS[0]);
+  document.getElementById('event-modal').style.display='';
+}
+function closeEventModal(){document.getElementById('event-modal').style.display='none';}
+function saveEvent(){
+  const title=document.getElementById('event-input-title').value.trim();
+  if(!title)return alert('Event title required.');
+  const ev={id:uid(),title,type:document.getElementById('event-input-type').value,
+    start:document.getElementById('event-input-start').value,
+    end:document.getElementById('event-input-end').value,
+    color:getSelectedColor('event-color-opts')};
+  events.push(ev);save();closeEventModal();renderCalendar();
+}
+function deleteEvent(id){
+  if(!confirm('Delete event?'))return;
+  events=events.filter(e=>e.id!==id);save();renderCalendar();
+}
+
+// ============================================================
+// SCHEDULE
+// ============================================================
+const SCHED_HOURS=Array.from({length:14},(_,i)=>i+7); // 7am-8pm
+const DAYS_SHORT=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+function getWeekStart(date){
+  const d=new Date(date);const day=d.getDay();const diff=d.getDate()-day+(day===0?-6:1);
+  d.setDate(diff);d.setHours(0,0,0,0);return d;
+}
+function initSchedule(){currentWeekStart=getWeekStart(new Date());}
+function changeWeek(dir){
+  currentWeekStart=new Date(currentWeekStart);
+  currentWeekStart.setDate(currentWeekStart.getDate()+dir*7);
+  renderSchedule();
+}
+function renderSchedule(){
+  const ws=currentWeekStart||getWeekStart(new Date());
+  const we=new Date(ws);we.setDate(we.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('en',{month:'short',day:'numeric'});
+  document.getElementById('sched-week-range').textContent=`${fmt(ws)} – ${fmt(we)}`;
+  let html=`<thead><tr><th class="sch-th" style="width:44px"></th>`;
+  for(let d=0;d<7;d++){
+    const day=new Date(ws);day.setDate(day.getDate()+d);
+    const isToday=day.toDateString()===new Date().toDateString();
+    html+=`<th class="sch-th" style="${isToday?'color:var(--accent)':''}">${DAYS_SHORT[d]}<br><span style="font-size:10px;font-weight:400;color:${isToday?'var(--accent)':'var(--text3)'}">${day.getDate()}</span></th>`;
+  }
+  html+='</tr></thead><tbody>';
+  SCHED_HOURS.forEach(h=>{
+    html+=`<tr><td class="sch-time">${h>12?h-12:h}${h>=12?'pm':'am'}</td>`;
+    for(let d=0;d<7;d++){
+      const blocks=scheduleBlocks.filter(b=>parseInt(b.day)===d&&b.startH<=h&&b.endH>h);
+      html+=`<td class="sch-cell">`;
+      blocks.forEach(b=>{
+        const linkedCourse=courses.find(c=>c.id===b.courseId);
+        html+=`<div class="sch-block" style="--block-color:${b.color||'var(--accent)'}" onclick="editBlock('${b.id}')">
+          ${b.label}${b.room?'<br><span style="font-weight:400;opacity:.7">'+b.room+'</span>':''}${linkedCourse?'<br><span style="font-weight:600;opacity:.9;font-size:9px">📌 '+linkedCourse.code+'</span>':''}
+        </div>`;
+      });
+      html+=`</td>`;
+    }
+    html+='</tr>';
+  });
+  html+='</tbody>';
+  document.getElementById('schedule-table').innerHTML=html;
+}
+function openAddBlock(){
+  editingBlockId=null;
+  document.getElementById('block-modal-title').textContent='Add Schedule Block';
+  document.getElementById('block-input-label').value='';
+  document.getElementById('block-input-day').value='0';
+  document.getElementById('block-input-start').value='08:00';
+  document.getElementById('block-input-end').value='09:00';
+  document.getElementById('block-input-room').value='';
+  populateBlockCourseSelect();
+  buildColorOpts('block-color-opts',COLORS[0]);
+  document.getElementById('block-modal').style.display='';
+}
+function editBlock(id){
+  const b=scheduleBlocks.find(x=>x.id===id);if(!b)return;
+  editingBlockId=id;
+  document.getElementById('block-modal-title').textContent='Edit Schedule Block';
+  document.getElementById('block-input-label').value=b.label;
+  document.getElementById('block-input-day').value=b.day;
+  document.getElementById('block-input-start').value=String(b.startH).padStart(2,'0')+':00';
+  document.getElementById('block-input-end').value=String(b.endH).padStart(2,'0')+':00';
+  document.getElementById('block-input-room').value=b.room||'';
+  populateBlockCourseSelect(b.courseId||'');
+  buildColorOpts('block-color-opts',b.color||COLORS[0]);
+  document.getElementById('block-modal').style.display='';
+}
+function closeBlockModal(){document.getElementById('block-modal').style.display='none';}
+function saveBlock(){
+  const label=document.getElementById('block-input-label').value.trim();
+  if(!label)return alert('Label required.');
+  const startH=parseInt(document.getElementById('block-input-start').value);
+  const endH=parseInt(document.getElementById('block-input-end').value);
+  if(endH<=startH)return alert('End time must be after start time.');
+  const data={label,day:parseInt(document.getElementById('block-input-day').value),
+    startH,endH,room:document.getElementById('block-input-room').value.trim(),
+    color:getSelectedColor('block-color-opts'),
+    courseId:document.getElementById('block-input-course').value||null};
+  if(editingBlockId){
+    const idx=scheduleBlocks.findIndex(x=>x.id===editingBlockId);
+    if(idx>-1)scheduleBlocks[idx]={...scheduleBlocks[idx],...data};
+    if(confirm('Save changes? (Cancel to delete this block)')){}
+    else{scheduleBlocks.splice(idx,1);}
+  }else{
+    scheduleBlocks.push({id:uid(),...data});
+  }
+  save();
+  const fromCourse=document.getElementById('block-modal').dataset.fromCourse;
+  document.getElementById('block-modal').dataset.fromCourse='';
+  closeBlockModal();
+  renderSchedule();
+  if(fromCourse==='1') renderCWSchedule();
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function setTheme(theme,el){
+  document.documentElement.dataset.theme=theme==='dark'?'':theme;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  localStorage.setItem('sn_theme',theme);
+}
+function loadTheme(){
+  const t=localStorage.getItem('sn_theme')||'dark';
+  document.documentElement.dataset.theme=t==='dark'?'':t;
+  const el=document.querySelector(`.swatch[data-theme="${t}"]`);
+  if(el){document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');}
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function clearAllData(){
+  localStorage.clear();
+  todos=[];courses=[];events=[];scheduleBlocks=[];profile={};
+  courseFiles={};courseLinks={};
+  save();
+  location.reload();
+}
+function init(){
+  loadTheme();
+  updateGreeting();
+  initCalendar();
+  initSchedule();
+  renderTodos();
+  // seed data if empty
+  if(!courses.length){
+    courses=[
+      {id:uid(),name:'Mathematics',code:'MATH 101',teacher:'Ms. Reyes',icon:'📐',color:'#7c6af7'},
+      {id:uid(),name:'English Literature',code:'ENG 102',teacher:'Mr. Cruz',icon:'📖',color:'#f06292'},
+      {id:uid(),name:'Science',code:'SCI 103',teacher:'Dr. Lim',icon:'🔬',color:'#4cceac'},
+    ];
+    save();
+  }
+  if(!todos.length){
+    todos=[
+      {id:uid(),title:'Read Chapter 4',due:new Date(Date.now()+86400000).toISOString().slice(0,16),courseId:courses[1]?.id,status:'ongoing',priority:'normal'},
+      {id:uid(),title:'Submit Lab Report',due:new Date(Date.now()-3600000).toISOString().slice(0,16),courseId:courses[2]?.id,status:'ongoing',priority:'high'},
+      {id:uid(),title:'Problem Set 2',due:new Date(Date.now()+172800000).toISOString().slice(0,16),courseId:courses[0]?.id,status:'completed',priority:'normal'},
+    ];
+    save();
+  }
+  renderTodos();
+  setInterval(()=>{
+    const now=new Date();
+    const h=now.getHours();
+    const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+    document.getElementById('greeting-text').innerHTML=`${greet}, <span id="greet-name">${profile.name||'Student'}</span> 👋`;
+  },60000);
+}
+init();
+
+// Event delegation for todo list actions
+document.getElementById('todo-list').addEventListener('click',function(e){
+  const btn=e.target.closest('[data-action]');
+  if(!btn)return;
+  e.stopPropagation();
+  const id=btn.dataset.id;
+  const action=btn.dataset.action;
+  if(action==='delete') deleteTodo(id);
+  else if(action==='edit') openEditTodo(id);
+});
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+// notifPrefs: {tasks, events, courses} — all boolean
+let notifPrefs = JSON.parse(localStorage.getItem('sn_notif_prefs')||'{"tasks":true,"events":true,"courses":false}');
+// Track already-fired notifications so we don't repeat them within a session
+const firedNotifs = new Set(JSON.parse(localStorage.getItem('sn_fired_notifs')||'[]'));
+
+function saveNotifPrefs(){
+  localStorage.setItem('sn_notif_prefs', JSON.stringify(notifPrefs));
+}
+function saveFiredNotifs(){
+  // Keep set to a reasonable size by pruning old keys
+  const arr = [...firedNotifs];
+  if(arr.length > 500) arr.splice(0, arr.length - 500);
+  localStorage.setItem('sn_fired_notifs', JSON.stringify(arr));
+}
+
+function loadNotifToggles(){
+  ['tasks','events','courses'].forEach(key=>{
+    const el = document.getElementById('toggle-'+key);
+    if(!el) return;
+    if(notifPrefs[key]) el.classList.add('on');
+    else el.classList.remove('on');
+  });
+}
+
+async function handleNotifToggle(el, key){
+  const willEnable = !el.classList.contains('on');
+  if(willEnable){
+    const granted = await requestNotifPermission();
+    if(!granted){
+      // Keep toggle off and inform user
+      el.classList.remove('on');
+      notifPrefs[key] = false;
+      saveNotifPrefs();
+      showInAppBanner('⚠️ Notifications blocked by browser. Please allow in your browser/device settings.', 'warning');
+      return;
+    }
+    el.classList.add('on');
+    notifPrefs[key] = true;
+    saveNotifPrefs();
+    showInAppBanner('🔔 Notifications enabled!', 'success');
+  } else {
+    el.classList.remove('on');
+    notifPrefs[key] = false;
+    saveNotifPrefs();
+    showInAppBanner('🔕 Notifications disabled.', 'info');
+  }
+}
+
+async function requestNotifPermission(){
+  if(!('Notification' in window)){
+    showInAppBanner('❌ Your browser does not support notifications.', 'warning');
+    return false;
+  }
+  if(Notification.permission === 'granted') return true;
+  if(Notification.permission === 'denied') return false;
+  const result = await Notification.requestPermission();
+  return result === 'granted';
+}
+
+function fireNotification(title, body, tag){
+  if(!('Notification' in window)) return;
+  if(Notification.permission !== 'granted') return;
+  if(firedNotifs.has(tag)) return;
+  firedNotifs.add(tag);
+  saveFiredNotifs();
+  try {
+    new Notification(title, {
+      body,
+      tag,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="%237c6af7"/><text x="16" y="22" text-anchor="middle" font-size="18">📚</text></svg>',
+      badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="%237c6af7"/></svg>'
+    });
+  } catch(e){ console.warn('Notification error:', e); }
+}
+
+function checkAndNotify(){
+  const now = new Date();
+  const nowMs = now.getTime();
+
+  // ── Task Reminders ──────────────────────────────────────────
+  if(notifPrefs.tasks && Notification.permission === 'granted'){
+    todos.forEach(t=>{
+      if(t.status !== 'ongoing' || !t.due) return;
+      const dueMs = new Date(t.due).getTime();
+      const diffMin = (dueMs - nowMs) / 60000;
+
+      // 60-min warning
+      if(diffMin > 0 && diffMin <= 60){
+        const tag = `task-60-${t.id}`;
+        const mins = Math.round(diffMin);
+        fireNotification(
+          '⏰ Task Due Soon',
+          `"${t.title}" is due in ${mins} minute${mins!==1?'s':''}!`,
+          tag
+        );
+      }
+      // 15-min warning
+      if(diffMin > 0 && diffMin <= 15){
+        const tag = `task-15-${t.id}`;
+        fireNotification(
+          '🚨 Task Due Very Soon',
+          `"${t.title}" is due in ${Math.round(diffMin)} minutes!`,
+          tag
+        );
+      }
+      // Overdue (just became overdue — within last 5 min)
+      if(diffMin < 0 && diffMin >= -5){
+        const tag = `task-overdue-${t.id}`;
+        fireNotification(
+          '❗ Task Overdue',
+          `"${t.title}" was due ${Math.abs(Math.round(diffMin))} minute${Math.abs(Math.round(diffMin))!==1?'s':''} ago.`,
+          tag
+        );
+      }
+      // Day-before reminder (between 23h and 25h before due)
+      if(diffMin >= 23*60 && diffMin <= 25*60){
+        const tag = `task-1day-${t.id}`;
+        const dueStr = new Date(t.due).toLocaleString('en',{hour:'2-digit',minute:'2-digit',month:'short',day:'numeric'});
+        fireNotification(
+          '📅 Task Due Tomorrow',
+          `"${t.title}" is due ${dueStr}.`,
+          tag
+        );
+      }
+    });
+  }
+
+  // ── Event Alerts ────────────────────────────────────────────
+  if(notifPrefs.events && Notification.permission === 'granted'){
+    events.forEach(ev=>{
+      if(!ev.start) return;
+      const startMs = new Date(ev.start).getTime();
+      const diffMin = (startMs - nowMs) / 60000;
+
+      // 30-min warning
+      if(diffMin > 0 && diffMin <= 30){
+        const tag = `event-30-${ev.id}`;
+        fireNotification(
+          '📆 Event Starting Soon',
+          `"${ev.title}" starts in ${Math.round(diffMin)} minutes.`,
+          tag
+        );
+      }
+      // Day-before (23h–25h before)
+      if(diffMin >= 23*60 && diffMin <= 25*60){
+        const tag = `event-1day-${ev.id}`;
+        fireNotification(
+          '🗓️ Event Tomorrow',
+          `"${ev.title}" is tomorrow.`,
+          tag
+        );
+      }
+    });
+  }
+
+  // ── Course / Schedule Reminders ─────────────────────────────
+  if(notifPrefs.courses && Notification.permission === 'granted'){
+    const todayDay = now.getDay(); // 0=Sun
+    // Convert to Mon=0 index
+    const todayIdx = todayDay === 0 ? 6 : todayDay - 1;
+    const curH = now.getHours();
+    const curMin = now.getMinutes();
+
+    scheduleBlocks.forEach(b=>{
+      if(parseInt(b.day) !== todayIdx) return;
+      // Notify 10 min before class starts
+      const startMin = b.startH * 60;
+      const nowTotalMin = curH * 60 + curMin;
+      const diff = startMin - nowTotalMin;
+      if(diff > 0 && diff <= 10){
+        const tag = `class-${b.id}-${now.toDateString()}`;
+        const linkedCourse = courses.find(c=>c.id===b.courseId);
+        const name = linkedCourse ? linkedCourse.name : b.label;
+        fireNotification(
+          '🎓 Class Starting Soon',
+          `"${name}" starts in ${diff} minute${diff!==1?'s':''}${b.room?' — Room '+b.room:''}.`,
+          tag
+        );
+      }
+    });
+  }
+}
+
+// Show a brief in-app toast banner (no UI changes to existing elements)
+function showInAppBanner(msg, type='info'){
+  const existing = document.getElementById('sn-notif-banner');
+  if(existing) existing.remove();
+  const colors = {success:'var(--green)', warning:'var(--yellow)', info:'var(--blue)', error:'var(--red)'};
+  const banner = document.createElement('div');
+  banner.id = 'sn-notif-banner';
+  banner.style.cssText = `
+    position:fixed;bottom:24px;left:calc(var(--side-nav-w) + 16px);right:16px;
+    background:var(--surface);border:1px solid ${colors[type]||colors.info};
+    border-left:3px solid ${colors[type]||colors.info};
+    border-radius:10px;padding:12px 16px;
+    font-size:13px;color:var(--text);
+    z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);
+    animation:fadeUp .25s ease;
+  `;
+  banner.textContent = msg;
+  document.body.appendChild(banner);
+  setTimeout(()=>{ banner.style.opacity='0'; banner.style.transition='opacity .4s'; setTimeout(()=>banner.remove(), 400); }, 3500);
+}
+
+// Init notification toggles from saved prefs
+loadNotifToggles();
+
+// Check every minute
+setInterval(checkAndNotify, 60000);
+// Also check once after 3s (so notifications fire quickly after page load)
+setTimeout(checkAndNotify, 3000);
+
+</script>
+</body>
+</html>
